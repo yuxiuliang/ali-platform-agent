@@ -1,0 +1,193 @@
+:root {
+  --bg: #f4f7fd;
+  --card-bg: #ffffff;
+  --text-main: #1f2430;
+  --text-sub: #556070;
+  --brand: #246bff;
+  --brand-dark: #1857da;
+  --border: #dfe5f1;
+  --ok-bg: #e8f7ee;
+  --ok-text: #1d7a43;
+  --warn-bg: #fff2f2;
+  --warn-text: #b02943;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+}
+
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.sub-title {
+  margin: 8px 0 0;
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.switch-line {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.field span {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+input[type="url"],
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select {
+  width: 100%;
+  height: 36px;
+  border: 1px solid #ccd6ea;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 10px;
+  font-size: 13px;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(36, 107, 255, 0.15);
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  border: 1px solid #c7d2ea;
+  background: #fff;
+  color: #33425e;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: #aebedd;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+
+.btn-primary:hover {
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+
+.status {
+  margin-top: 10px;
+  border: 1px solid #d6def3;
+  border-radius: 8px;
+  background: #eff3ff;
+  color: #41537a;
+  font-size: 12px;
+  padding: 7px 9px;
+}
+
+.status.success {
+  border-color: #b7e3c8;
+  background: var(--ok-bg);
+  color: var(--ok-text);
+}
+
+.status.warn {
+  border-color: #f0d2d7;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+}
+
+.meta-line {
+  margin-top: 8px;
+  border: 1px solid #d6def3;
+  border-radius: 8px;
+  background: #eff3ff;
+  color: #41537a;
+  font-size: 12px;
+  padding: 7px 9px;
+}
+
+.log-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 260px;
+  overflow: auto;
+  display: grid;
+  gap: 6px;
+}
+
+.log-list li {
+  background: #f7f9ff;
+  border: 1px solid #dbe3f4;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #304161;
+  line-height: 1.5;
+}
+
+.log-list li.warn {
+  background: #fff5f5;
+  border-color: #f2d6db;
+  color: #a9384e;
+}
+
+.log-list li.error {
+  background: #ffeef0;
+  border-color: #f0b9c0;
+  color: #93263a;
+}

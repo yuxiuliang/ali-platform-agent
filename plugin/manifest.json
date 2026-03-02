@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "电商AI客服助手（淘宝/闲鱼/飞猪版）",
+  "description": "零授权、本地处理的淘宝/闲鱼/飞猪客服提效插件，仅提供回复建议。",
+  "version": "0.1.0",
+  "permissions": [
+    "storage",
+    "sidePanel",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://*.taobao.com/*",
+    "https://*.tmall.com/*",
+    "https://*.xianyu.com/*",
+    "https://*.fliggy.com/*",
+    "https://*.alitrip.com/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "电商AI客服助手"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.taobao.com/*",
+        "https://*.tmall.com/*",
+        "https://*.xianyu.com/*",
+        "https://*.fliggy.com/*",
+        "https://*.alitrip.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
