@@ -34,7 +34,11 @@ const elements = {
   statusLine: document.getElementById("statusLine"),
   replyOutput: document.getElementById("replyOutput"),
   violationHint: document.getElementById("violationHint"),
-  recentLogs: document.getElementById("recentLogs")
+  recentLogs: document.getElementById("recentLogs"),
+  manualMessageInput: document.getElementById("manualMessageInput"),
+  applyManualMessageBtn: document.getElementById("applyManualMessageBtn"),
+  applyAndGenerateManualBtn: document.getElementById("applyAndGenerateManualBtn"),
+  chipButtons: Array.from(document.querySelectorAll(".chip-btn"))
 };
 
 let latestReplyText = "";
@@ -185,6 +189,8 @@ function typewriterRender(text, done) {
 function setGeneratingState(generating) {
   isGenerating = generating;
   syncGenerateButtons();
+  elements.applyManualMessageBtn.disabled = generating;
+  elements.applyAndGenerateManualBtn.disabled = generating;
   elements.generateBtn.textContent = generating ? "生成中..." : "仅生成";
   elements.generateAndCopyBtn.textContent = generating ? "生成中..." : "生成并复制";
   syncCopyButtonDisabled();
@@ -328,6 +334,57 @@ async function onOpenSettingsClick() {
   await chrome.runtime.openOptionsPage();
 }
 
+function getManualMessageText() {
+  return String(elements.manualMessageInput.value || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function applyManualMessageToView(text, scene = "general") {
+  const oldState = currentStateCache || {};
+  const nextState = {
+    ...oldState,
+    latestUserMessage: text,
+    latestScene: scene
+  };
+  hydrateStateView(nextState);
+}
+
+async function injectManualMessage(options = {}) {
+  const { withGenerate = false } = options;
+  const text = getManualMessageText();
+  if (!text) {
+    setStatus("请先输入测试消息。", "warn");
+    return;
+  }
+
+  const result = await sendMessage({
+    type: "ASSISTANT_NEW_USER_MESSAGE",
+    payload: { text }
+  });
+
+  if (!result?.ok) {
+    setStatus("测试消息写入失败，请重试。", "warn");
+    return;
+  }
+
+  applyManualMessageToView(text, result.latestScene || "general");
+  setStatus(withGenerate ? "测试消息已写入，正在生成建议..." : "测试消息已写入，可直接点击生成。", "ok");
+
+  if (withGenerate) {
+    await generateReply("已写入测试消息，正在生成建议...");
+  }
+}
+
+function onChipClick(button) {
+  const example = String(button.dataset.example || "").trim();
+  if (!example) {
+    return;
+  }
+  elements.manualMessageInput.value = example;
+  setStatus("已填充示例消息，可点击“写入并生成”。");
+}
+
 function hydrateStateView(state) {
   currentStateCache = state || null;
   renderLatestMessage(state?.latestUserMessage || "");
@@ -391,8 +448,19 @@ function bindEvents() {
   elements.generateAndCopyBtn.addEventListener("click", onGenerateAndCopyClick);
   elements.copyBtn.addEventListener("click", onCopyClick);
   elements.openSettingsBtn.addEventListener("click", onOpenSettingsClick);
+  elements.applyManualMessageBtn.addEventListener("click", async () => {
+    await injectManualMessage({ withGenerate: false });
+  });
+  elements.applyAndGenerateManualBtn.addEventListener("click", async () => {
+    await injectManualMessage({ withGenerate: true });
+  });
   elements.autoGenerateEnabled.addEventListener("change", onAutoGenerateChange);
   elements.autoCopyEnabled.addEventListener("change", onAutoCopyChange);
+  for (const button of elements.chipButtons) {
+    button.addEventListener("click", () => {
+      onChipClick(button);
+    });
+  }
 
   window.addEventListener("keydown", (event) => {
     if (shouldIgnoreHotkey(event) || isGenerating) {

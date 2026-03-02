@@ -29,6 +29,27 @@
         <p id="latestMessage" class="buyer-message">暂无用户消息，请在淘宝/闲鱼/飞猪客服页等待新消息。</p>
       </section>
 
+      <details class="card manual-card">
+        <summary>本地测试模式（无店铺也可演示）</summary>
+        <p class="manual-hint">输入一条买家消息后，可直接触发场景识别和话术生成流程。</p>
+        <div class="manual-quick-list">
+          <button class="chip-btn" type="button" data-example="这款我身高168体重120穿什么码？">尺码咨询示例</button>
+          <button class="chip-btn" type="button" data-example="我的订单什么时候发货？可以加急吗？">发货咨询示例</button>
+          <button class="chip-btn" type="button" data-example="我想退货退款，怎么走流程？">退换咨询示例</button>
+        </div>
+        <textarea
+          id="manualMessageInput"
+          class="manual-input"
+          rows="3"
+          maxlength="500"
+          placeholder="例如：你好，这单物流卡住两天了，麻烦帮我查下到哪了"
+        ></textarea>
+        <div class="manual-actions">
+          <button id="applyManualMessageBtn" class="btn" type="button">写入测试消息</button>
+          <button id="applyAndGenerateManualBtn" class="btn btn-primary" type="button">写入并生成</button>
+        </div>
+      </details>
+
       <section class="card">
         <div class="title-row">
           <h2>快速回复</h2>
