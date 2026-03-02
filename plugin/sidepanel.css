@@ -24,15 +24,19 @@ html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
   font-family: "Alibaba PuHuiTi 3.0", "HarmonyOS Sans SC", "Source Han Sans SC", sans-serif;
   color: var(--text-main);
   background: radial-gradient(125% 120% at 0% 0%, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-0) 100%);
 }
 
 .page {
+  height: 100dvh;
   padding: 12px;
   display: grid;
-  gap: 10px;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 8px;
+  overflow: hidden;
 }
 
 .card {
@@ -82,17 +86,33 @@ body {
 }
 
 .hero-sub {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: var(--text-sub);
   font-size: 12px;
   line-height: 1.55;
 }
 
 .workflow-line {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   font-size: 11px;
   line-height: 1.4;
   color: #5d6f90;
+}
+
+.workspace {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 8px;
+  overflow: hidden;
+}
+
+.secondary-stack {
+  max-height: 128px;
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+  padding-right: 2px;
 }
 
 .pill {
@@ -168,9 +188,9 @@ h2 {
 }
 
 .buyer-message {
-  margin: 10px 0 0;
-  min-height: 64px;
-  max-height: 190px;
+  margin: 8px 0 0;
+  min-height: 52px;
+  max-height: 120px;
   overflow: auto;
   white-space: pre-wrap;
   font-size: 13px;
@@ -264,7 +284,7 @@ h2 {
 }
 
 .tone-group {
-  margin-top: 10px;
+  margin-top: 8px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
@@ -294,7 +314,7 @@ h2 {
 }
 
 .switch-group {
-  margin-top: 11px;
+  margin-top: 8px;
   display: grid;
   gap: 8px;
 }
@@ -308,14 +328,14 @@ h2 {
 }
 
 .primary-actions {
-  margin-top: 12px;
+  margin-top: 8px;
   display: grid;
   grid-template-columns: 1fr 0.72fr;
   gap: 8px;
 }
 
 .shortcut-hint {
-  margin: 8px 2px 0;
+  margin: 6px 2px 0;
   font-size: 11px;
   color: #627392;
 }
@@ -361,7 +381,7 @@ h2 {
 }
 
 .status-line {
-  margin: 9px 2px 0;
+  margin: 7px 2px 0;
   min-height: 18px;
   font-size: 12px;
   color: var(--text-sub);
@@ -376,9 +396,10 @@ h2 {
 }
 
 .reply-output {
-  margin-top: 10px;
-  min-height: 120px;
-  max-height: 240px;
+  margin-top: 8px;
+  min-height: 90px;
+  max-height: none;
+  height: 100%;
   overflow: auto;
   white-space: pre-wrap;
   font-size: 13px;
@@ -390,9 +411,10 @@ h2 {
 }
 
 .reply-card {
-  position: sticky;
-  top: 8px;
-  z-index: 8;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 0;
 }
 
 .reply-meta {
@@ -497,5 +519,9 @@ h2 {
   .manual-actions,
   .primary-actions {
     grid-template-columns: 1fr;
+  }
+
+  .secondary-stack {
+    max-height: 110px;
   }
 }
