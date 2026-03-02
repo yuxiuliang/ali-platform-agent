@@ -36,7 +36,8 @@ body {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 8px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .card {
@@ -96,9 +97,12 @@ body {
 .workspace {
   min-height: 0;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
   gap: 8px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 2px;
+  align-content: start;
 }
 
 .secondary-stack {
@@ -416,8 +420,8 @@ h2 {
 .reply-output {
   margin-top: 8px;
   min-height: 90px;
-  max-height: none;
-  height: 100%;
+  max-height: 240px;
+  height: auto;
   overflow: auto;
   white-space: pre-wrap;
   font-size: 13px;
@@ -431,7 +435,7 @@ h2 {
 .reply-card {
   min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto auto auto auto;
   gap: 0;
 }
 
