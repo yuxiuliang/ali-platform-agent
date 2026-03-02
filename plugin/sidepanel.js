@@ -39,6 +39,7 @@ const FALLBACK_REASON_LABELS = {
 const TONES = ["professional", "friendly", "firm"];
 
 const elements = {
+  pageRoot: document.querySelector(".page"),
   latestMessage: document.getElementById("latestMessage"),
   sceneLabel: document.getElementById("sceneLabel"),
   confidenceTag: document.getElementById("confidenceTag"),
@@ -51,6 +52,7 @@ const elements = {
   copyBtn: document.getElementById("copyBtn"),
   openSettingsBtn: document.getElementById("openSettingsBtn"),
   sourceTag: document.getElementById("sourceTag"),
+  compactModeBtn: document.getElementById("compactModeBtn"),
   runBadge: document.getElementById("runBadge"),
   statusLine: document.getElementById("statusLine"),
   replyOutput: document.getElementById("replyOutput"),
@@ -138,6 +140,19 @@ function setStatus(text, level = "") {
     return;
   }
   setRunBadge("待命");
+}
+
+function applyCompactMode(enabled, silent = false) {
+  const compactEnabled = Boolean(enabled);
+  if (!elements.pageRoot || !elements.compactModeBtn) {
+    return;
+  }
+  elements.pageRoot.classList.toggle("is-compact", compactEnabled);
+  elements.compactModeBtn.classList.toggle("active", compactEnabled);
+  elements.compactModeBtn.textContent = `极简模式：${compactEnabled ? "开" : "关"}`;
+  if (!silent) {
+    setStatus(compactEnabled ? "已开启极简模式。" : "已关闭极简模式。");
+  }
 }
 
 function renderScene(scene) {
@@ -444,6 +459,12 @@ async function onOpenSettingsClick() {
   await chrome.runtime.openOptionsPage();
 }
 
+async function onToggleCompactMode() {
+  const nextEnabled = !Boolean(currentPrefsCache?.compactModeEnabled);
+  applyCompactMode(nextEnabled);
+  await applyPrefsPatch({ compactModeEnabled: nextEnabled });
+}
+
 function getManualMessageText() {
   return String(elements.manualMessageInput.value || "")
     .replace(/\s+/g, " ")
@@ -521,6 +542,7 @@ function hydratePrefsView(prefs) {
   setToneButtonsActive(selectedTone);
   elements.autoGenerateEnabled.checked = Boolean(prefs?.autoGenerateEnabled ?? true);
   elements.autoCopyEnabled.checked = Boolean(prefs?.autoCopyEnabled ?? false);
+  applyCompactMode(Boolean(prefs?.compactModeEnabled), true);
 }
 
 async function maybeAutoGenerate(previousState, nextState) {
@@ -559,6 +581,7 @@ function bindEvents() {
   elements.generateBtn.addEventListener("click", onGenerateClick);
   elements.generateAndCopyBtn.addEventListener("click", onGenerateAndCopyClick);
   elements.copyBtn.addEventListener("click", onCopyClick);
+  elements.compactModeBtn.addEventListener("click", onToggleCompactMode);
   elements.openSettingsBtn.addEventListener("click", onOpenSettingsClick);
   elements.applyManualMessageBtn.addEventListener("click", async () => {
     await injectManualMessage({ withGenerate: false });

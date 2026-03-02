@@ -82,6 +82,7 @@ body {
 .hero-tags {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
@@ -115,6 +116,14 @@ body {
   padding-right: 2px;
 }
 
+.page.is-compact {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.page.is-compact .secondary-stack {
+  display: none;
+}
+
 .pill {
   border: 1px solid #cadcff;
   border-radius: 999px;
@@ -141,6 +150,22 @@ body {
   border-color: #f0d1d8;
   background: var(--warn-bg);
   color: var(--warn-text);
+}
+
+.pill-btn {
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-btn:hover {
+  border-color: #b8cdf7;
+  background: #dfeaff;
+}
+
+.pill-btn.active {
+  border-color: #b8cbe8;
+  background: #edf3ff;
+  color: #35507f;
 }
 
 .title-row {
