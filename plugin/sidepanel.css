@@ -378,7 +378,7 @@ h2 {
 .reply-output {
   margin-top: 10px;
   min-height: 120px;
-  max-height: 320px;
+  max-height: 240px;
   overflow: auto;
   white-space: pre-wrap;
   font-size: 13px;
@@ -387,6 +387,12 @@ h2 {
   border-radius: 12px;
   background: #fcfdff;
   padding: 10px;
+}
+
+.reply-card {
+  position: sticky;
+  top: 8px;
+  z-index: 8;
 }
 
 .reply-meta {
