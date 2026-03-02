@@ -11,7 +11,10 @@
       <header class="hero card">
         <div class="hero-top">
           <h1>电商AI客服助手</h1>
-          <span class="pill">本地处理</span>
+          <div class="hero-tags">
+            <span class="pill">本地处理</span>
+            <span id="runBadge" class="pill pill-soft">待命</span>
+          </div>
         </div>
         <p class="hero-sub">不自动发送，只给建议话术，人工确认后粘贴发送。</p>
         <div class="workflow">
@@ -21,10 +24,14 @@
         </div>
       </header>
 
-      <section class="card">
+      <section class="card message-card">
         <div class="title-row">
           <h2>买家最新消息</h2>
           <span id="sceneLabel" class="scene-tag">场景：未识别</span>
+        </div>
+        <div class="message-meta">
+          <span id="confidenceTag" class="meta-chip">识别置信度 --</span>
+          <span class="meta-chip">实时监听</span>
         </div>
         <p id="latestMessage" class="buyer-message">暂无用户消息，请在淘宝/闲鱼/飞猪客服页等待新消息。</p>
       </section>
@@ -50,7 +57,7 @@
         </div>
       </details>
 
-      <section class="card">
+      <section class="card quick-card">
         <div class="title-row">
           <h2>快速回复</h2>
           <span class="quick-tag">高频操作</span>
@@ -80,7 +87,7 @@
         <p id="statusLine" class="status-line">准备就绪</p>
       </section>
 
-      <section class="card">
+      <section class="card reply-card">
         <div class="title-row">
           <h2>建议话术</h2>
           <div class="title-actions">
@@ -89,6 +96,7 @@
           </div>
         </div>
         <div id="replyOutput" class="reply-output">点击“生成并复制”或“仅生成”后在此展示内容。</div>
+        <div id="replyMetaTag" class="reply-meta">生成信息：--</div>
         <div id="violationHint" class="violation-hint"></div>
       </section>
 

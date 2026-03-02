@@ -1,3 +1,8 @@
+const APP_TEXT = {
+  waitMessageHint: "暂无用户消息，请在淘宝/闲鱼/飞猪客服页等待新消息。",
+  waitGenerateHint: "暂无可生成的用户消息，请在淘宝/闲鱼/飞猪聊天页等待新消息。"
+};
+
 const STORAGE_KEYS = {
   state: "assistant_state",
   prefs: "assistant_prefs",
@@ -18,11 +23,25 @@ const SOURCE_LABELS = {
   model: "模型增强"
 };
 
+const FALLBACK_REASON_LABELS = {
+  enhancer_disabled: "模型增强未开启",
+  endpoint_missing: "未配置模型接口地址",
+  endpoint_invalid: "模型接口地址无效",
+  unauthorized: "接口鉴权失败",
+  service_fallback: "服务端已回退本地模板",
+  timeout: "模型请求超时",
+  network_error: "模型接口网络异常",
+  http_status: "模型接口返回异常状态",
+  parse_error: "模型接口响应解析失败",
+  empty_output: "模型接口未返回可用话术"
+};
+
 const TONES = ["professional", "friendly", "firm"];
 
 const elements = {
   latestMessage: document.getElementById("latestMessage"),
   sceneLabel: document.getElementById("sceneLabel"),
+  confidenceTag: document.getElementById("confidenceTag"),
   toneButtons: Array.from(document.querySelectorAll(".tone-btn")),
   autoGenerateEnabled: document.getElementById("autoGenerateEnabled"),
   autoCopyEnabled: document.getElementById("autoCopyEnabled"),
@@ -31,8 +50,10 @@ const elements = {
   copyBtn: document.getElementById("copyBtn"),
   openSettingsBtn: document.getElementById("openSettingsBtn"),
   sourceTag: document.getElementById("sourceTag"),
+  runBadge: document.getElementById("runBadge"),
   statusLine: document.getElementById("statusLine"),
   replyOutput: document.getElementById("replyOutput"),
+  replyMetaTag: document.getElementById("replyMetaTag"),
   violationHint: document.getElementById("violationHint"),
   recentLogs: document.getElementById("recentLogs"),
   manualMessageInput: document.getElementById("manualMessageInput"),
@@ -66,7 +87,7 @@ function escapeHtml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -74,9 +95,34 @@ function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function getFallbackReasonLabel(reason) {
+  if (!reason) {
+    return "规则模板";
+  }
+  return FALLBACK_REASON_LABELS[reason] || reason;
+}
+
+function setRunBadge(text, level = "") {
+  elements.runBadge.textContent = text;
+  elements.runBadge.className = `pill pill-soft${level ? ` ${level}` : ""}`;
+}
+
 function setStatus(text, level = "") {
   elements.statusLine.textContent = text;
   elements.statusLine.className = `status-line${level ? ` ${level}` : ""}`;
+  if (isGenerating) {
+    setRunBadge("处理中");
+    return;
+  }
+  if (level === "ok") {
+    setRunBadge("已就绪", "ok");
+    return;
+  }
+  if (level === "warn") {
+    setRunBadge("需关注", "warn");
+    return;
+  }
+  setRunBadge("待命");
 }
 
 function renderScene(scene) {
@@ -84,15 +130,49 @@ function renderScene(scene) {
   elements.sceneLabel.textContent = `场景：${label}`;
 }
 
+function renderSceneMeta(sceneMeta) {
+  if (!sceneMeta) {
+    elements.confidenceTag.className = "meta-chip";
+    elements.confidenceTag.textContent = "识别置信度 --";
+    return;
+  }
+
+  const confidence = Math.round((sceneMeta.confidence || 0) * 100);
+  const corrected = Boolean(sceneMeta.corrected);
+  elements.confidenceTag.className = `meta-chip${confidence < 50 ? " warn" : ""}`;
+  elements.confidenceTag.textContent = corrected
+    ? `识别置信度 ${confidence}% · 已纠偏`
+    : `识别置信度 ${confidence}%`;
+}
+
 function renderSource(source) {
   const label = SOURCE_LABELS[source] || "规则引擎";
   elements.sourceTag.textContent = label;
 }
 
+function renderReplyMeta(source, enhancerMeta) {
+  if (source === "model") {
+    const latency = Math.max(0, Number(enhancerMeta?.latencyMs) || 0);
+    elements.replyMetaTag.className = "reply-meta";
+    elements.replyMetaTag.textContent = `生成信息：模型增强 · ${latency}ms`;
+    return;
+  }
+
+  if (enhancerMeta?.attempted) {
+    const reasonText = getFallbackReasonLabel(enhancerMeta.fallbackReason);
+    elements.replyMetaTag.className = "reply-meta warn";
+    elements.replyMetaTag.textContent = `生成信息：规则模板 · ${reasonText}`;
+    return;
+  }
+
+  elements.replyMetaTag.className = "reply-meta";
+  elements.replyMetaTag.textContent = "生成信息：规则模板 · 本地即时";
+}
+
 function renderLatestMessage(message) {
   const text = String(message || "").trim();
   if (!text) {
-    elements.latestMessage.textContent = "暂无用户消息，请在淘宝/闲鱼/飞猪客服页等待新消息。";
+    elements.latestMessage.textContent = APP_TEXT.waitMessageHint;
     return;
   }
   elements.latestMessage.textContent = text;
@@ -194,6 +274,9 @@ function setGeneratingState(generating) {
   elements.generateBtn.textContent = generating ? "生成中..." : "仅生成";
   elements.generateAndCopyBtn.textContent = generating ? "生成中..." : "生成并复制";
   syncCopyButtonDisabled();
+  if (generating) {
+    setRunBadge("处理中");
+  }
 }
 
 async function applyPrefsPatch(patch) {
@@ -263,9 +346,10 @@ async function generateReply(reasonText, options = {}) {
     syncCopyButtonDisabled();
     elements.replyOutput.textContent =
       result?.error === "NO_MESSAGE"
-        ? "暂无可生成的用户消息，请在淘宝/闲鱼/飞猪聊天页等待新消息。"
+        ? APP_TEXT.waitGenerateHint
         : `生成失败：${result?.message || result?.error || "未知错误"}`;
     renderViolationHint([]);
+    renderReplyMeta("rule", { attempted: true, fallbackReason: result?.error || "unknown" });
     setStatus("生成失败，请重试。", "warn");
     return;
   }
@@ -274,7 +358,9 @@ async function generateReply(reasonText, options = {}) {
   latestReplyText = data.reply || "";
   syncCopyButtonDisabled();
   renderScene(data.scene || "general");
+  renderSceneMeta(data.sceneMeta || currentStateCache?.latestSceneMeta || null);
   renderSource(data.source || "rule");
+  renderReplyMeta(data.source || "rule", data.enhancerMeta || null);
   renderViolationHint(data.violations || []);
 
   typewriterRender(latestReplyText, () => {
@@ -389,7 +475,9 @@ function hydrateStateView(state) {
   currentStateCache = state || null;
   renderLatestMessage(state?.latestUserMessage || "");
   renderScene(state?.latestScene || "general");
+  renderSceneMeta(state?.latestSceneMeta || null);
   renderSource(state?.lastSource || "rule");
+  renderReplyMeta(state?.lastSource || "rule", state?.lastEnhancerMeta || null);
 
   if (state?.lastGeneratedReply) {
     latestReplyText = state.lastGeneratedReply;
@@ -456,6 +544,7 @@ function bindEvents() {
   });
   elements.autoGenerateEnabled.addEventListener("change", onAutoGenerateChange);
   elements.autoCopyEnabled.addEventListener("change", onAutoCopyChange);
+
   for (const button of elements.chipButtons) {
     button.addEventListener("click", () => {
       onChipClick(button);

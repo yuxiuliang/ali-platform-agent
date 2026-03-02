@@ -8,73 +8,82 @@
   </head>
   <body>
     <main class="page">
-      <header class="header card">
-        <h1>电商AI客服助手 · 设置</h1>
-        <p class="sub-title">高级能力配置（面向运营/管理员）</p>
+      <header class="hero card">
+        <div class="hero-top">
+          <h1>电商AI客服助手 · 高级设置</h1>
+          <span class="hero-badge">管理员配置页</span>
+        </div>
+        <p class="sub-title">普通客服只用侧边栏；接口、纠偏与诊断统一在这里管理。</p>
       </header>
 
-      <section class="card">
-        <h2>模型增强</h2>
-        <label class="switch-line">
-          <input type="checkbox" id="enhancerEnabled" />
-          <span>启用模型增强（默认关闭）</span>
-        </label>
+      <section class="layout-grid">
+        <section class="card">
+          <h2>模型增强</h2>
+          <p class="section-tip">默认关闭，建议先在本地规则稳定后再开启。</p>
+          <label class="switch-line">
+            <input type="checkbox" id="enhancerEnabled" />
+            <span>启用模型增强（默认关闭）</span>
+          </label>
 
-        <label class="field">
-          <span>模型接口地址</span>
-          <input id="modelEndpoint" type="url" placeholder="http://127.0.0.1:8787/reply" autocomplete="off" />
-        </label>
+          <label class="field">
+            <span>模型接口地址</span>
+            <input id="modelEndpoint" type="url" placeholder="http://127.0.0.1:8787/reply" autocomplete="off" />
+          </label>
 
-        <label class="field">
-          <span>接口访问令牌（必填）</span>
-          <input id="serviceToken" type="password" placeholder="与服务端 SERVICE_ACCESS_TOKEN 保持一致" autocomplete="off" />
-        </label>
+          <label class="field">
+            <span>接口访问令牌（必填）</span>
+            <input id="serviceToken" type="password" placeholder="与服务端 SERVICE_ACCESS_TOKEN 保持一致" autocomplete="off" />
+          </label>
 
-        <label class="field">
-          <span>模型超时（毫秒，600-8000）</span>
-          <input id="modelTimeoutMs" type="number" min="600" max="8000" step="100" />
-        </label>
+          <label class="field">
+            <span>模型超时（毫秒，600-8000）</span>
+            <input id="modelTimeoutMs" type="number" min="600" max="8000" step="100" />
+          </label>
 
-        <div class="actions">
-          <button id="saveModelBtn" class="btn btn-primary">保存模型配置</button>
-          <button id="testModelBtn" class="btn">测试模型</button>
-        </div>
-        <div id="modelStatus" class="status">模型状态：未测试</div>
-      </section>
+          <div class="actions">
+            <button id="saveModelBtn" class="btn btn-primary">保存模型配置</button>
+            <button id="testModelBtn" class="btn">测试模型</button>
+          </div>
+          <div id="modelStatus" class="status">模型状态：未测试</div>
+        </section>
 
-      <section class="card">
-        <h2>场景纠偏</h2>
-        <label class="switch-line">
-          <input type="checkbox" id="sceneOverrideEnabled" />
-          <span>启用误判修正开关</span>
-        </label>
+        <section class="card">
+          <h2>场景纠偏</h2>
+          <p class="section-tip">当实际业务语义复杂时，可临时手动指定场景。</p>
+          <label class="switch-line">
+            <input type="checkbox" id="sceneOverrideEnabled" />
+            <span>启用误判修正开关</span>
+          </label>
 
-        <label class="field">
-          <span>手动场景（开启纠偏后生效）</span>
-          <select id="sceneOverride">
-            <option value="auto">自动识别</option>
-            <option value="size">尺码咨询</option>
-            <option value="shipping">发货时效</option>
-            <option value="logistics">物流查询</option>
-            <option value="return_exchange">退换售后</option>
-            <option value="negative_review">差评安抚</option>
-          </select>
-        </label>
+          <label class="field">
+            <span>手动场景（开启纠偏后生效）</span>
+            <select id="sceneOverride">
+              <option value="auto">自动识别</option>
+              <option value="size">尺码咨询</option>
+              <option value="shipping">发货时效</option>
+              <option value="logistics">物流查询</option>
+              <option value="return_exchange">退换售后</option>
+              <option value="negative_review">差评安抚</option>
+            </select>
+          </label>
 
-        <div class="actions">
-          <button id="saveSceneBtn" class="btn btn-primary">保存纠偏设置</button>
-        </div>
-      </section>
+          <div class="actions">
+            <button id="saveSceneBtn" class="btn btn-primary">保存纠偏设置</button>
+          </div>
+        </section>
 
-      <section class="card">
-        <h2>运行诊断</h2>
-        <div class="meta-line" id="templateStats">模板库：--</div>
-        <div class="meta-line" id="latestMeta">最近识别：--</div>
-      </section>
+        <section class="card span-2">
+          <h2>运行诊断</h2>
+          <div class="meta-grid">
+            <div class="meta-line" id="templateStats">模板库：--</div>
+            <div class="meta-line" id="latestMeta">最近识别：--</div>
+          </div>
+        </section>
 
-      <section class="card">
-        <h2>操作日志</h2>
-        <ul id="logList" class="log-list"></ul>
+        <section class="card span-2">
+          <h2>操作日志</h2>
+          <ul id="logList" class="log-list"></ul>
+        </section>
       </section>
     </main>
 
