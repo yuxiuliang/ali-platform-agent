@@ -419,10 +419,10 @@ h2 {
 
 .reply-output {
   margin-top: 8px;
-  min-height: 90px;
-  max-height: 240px;
+  min-height: 56px;
+  max-height: none;
   height: auto;
-  overflow: auto;
+  overflow: visible;
   white-space: pre-wrap;
   font-size: 13px;
   line-height: 1.65;
